@@ -1,0 +1,15 @@
+{
+    "name": "laravel/bee",
+    "require": {
+        "twig/twig": "^3.0"
+    },
+    "authors": [
+        {
+            "name": "Виноходов Владислав",
+            "email": "vladicu@mail.ru"
+        }
+    ],
+    "files": [
+        "config.php"
+    ]
+}

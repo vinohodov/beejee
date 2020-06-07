@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>Список задач</title>
+    <meta charset="utf-8">
+    <meta name="description" content="Тестовое задание для BeeJee">
+    <meta name="author" content="Виноходов Владислав">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  </head>
+  
+  <body>
+    <br/>
+    <div class="container">
+      <div class="row">
+        <div class="col"><h2>Список задач</h2></div>
+        {% if auth %}
+        <div class="col d-flex justify-content-end">
+          {% if path == 'edit' %}
+          <a href="/">Главная</a>
+          {% else %}
+          <a href="/?path=edit">Редактировать</a>
+          {% endif %}
+        </div>
+        <div class="col d-flex justify-content-end">
+          <form method="post" action="/">
+            <input type="hidden" value="1" name="logout">
+            <button type="submit" class="btn btn-outline-primary">Выйти</button>
+          </form>
+        </div>
+        {% else %}
+        <div class="col d-flex justify-content-end">
+          <form method="get">
+            <input type="hidden" value="login" name="path">
+            <button type="submit" class="btn btn-outline-primary">Войти</button>
+          </form>
+        </div>
+        {% endif %}
+      </div>
+      <p>Пользовательский список задач для выполнения:</p>
+      <table class="table">
+        <thead class="thead-dark">
+          <tr>
+            <th><a href="{{ links.username|e }}">Имя пользователя</a></th>
+            <th><a href="{{ links.email|e }}">Email</a></th>
+            <th>Текст задачи</th>
+            <th><a href="{{ links.status|e }}">Статус</a></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if list_tasks|length > 0 %}
+          {% for task in list_tasks %}
+          <tr class="
+          {% if task.status == 't' %}
+            table-success
+          {% else %}
+            table-warning
+          {% endif %}
+          ">
+            <td>{{ task.username|e }}</td>
+            <td>{{ task.email|e }}</td>
+            <td>
+              {{ task.description|e }}
+              {% if path == 'edit' %}
+              <br/><a href="{{ links.common|e }}&edit={{ task.id|e }}">Редактировать</a>
+              {% endif %}
+            </td>
+            <td>
+              {% if task.status == 't' %}
+                Выполнено
+              {% else %}
+                {% if path != 'edit' %}
+                Не решена
+                {% else %}
+                <a href="{{ links.common|e }}&commit={{ task.id|e }}">Не решена</a>
+                {% endif %}
+              {% endif %}
+              {% if task.edited == 't' %}
+                <br/>Отредактировано администратором
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr><td colspan="4">Пока нет заданий</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+      {% if pagination is defined %}
+      <ul class="pagination">
+        <li class="page-item 
+          {% if pagination.prev_page is same as(0) %}
+          disabled
+          {% endif %}
+        "><a class="page-link" href="{{ [pagination.link, pagination.prev_page]|join }}">&lt; </a></li>
+        {% for i in 1..pagination.count_pages %}
+        <li class="page-item 
+          {% if pagination.current_page == i %}
+          disabled
+          {% endif %}
+        "><a class="page-link" href="{{ [pagination.link, i]|join }}">{{ i }}</a></li>
+        {% endfor %}
+        <li class="page-item
+        {% if pagination.next_page  is same as(0) %}
+          disabled
+        {% endif %}
+        "><a class="page-link" href="{{ [pagination.link, pagination.next_page]|join }}">&gt; </a></li>
+      </ul>
+      {% endif %}
+      {% if result_adding %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+        Новая задача была добавлена в список
+      </div>
+      {% endif %}
+      {% if update_description %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span></button>
+        Описание задачи было успешно отредактированно
+      </div>
+      {% endif %}
+      <br/>
+      {% if path is same as('') or (path == 'edit' and edit.id) %}
+      <h2>
+        {% if path == 'edit' %}
+        Редактировать задачу
+        {% else %}
+        Добавить новую задачу
+        {% endif %}
+      </h2>
+      <p></p>
+      <form method="POST" action="{{ links.common|e }}">
+        {% if path == 'edit' %}
+          <input type="hidden" name="id" value="{{ edit.id }}"/>
+        {% endif %}
+        <div class="form-row">
+          <div class="col">
+            {% if path == 'edit' %}
+              {{ edit.username }}
+            {% else %}
+              <input type="text" class="form-control" id="username" placeholder="Введите имя пользователя" name="username" required/>
+            {% endif %}
+          </div>
+          <div class="col">
+            {% if path == 'edit' %}
+              {{ edit.email }}
+            {% else %}
+              <input type="email" class="form-control" id="email" placeholder="Введите email" name="email" required/>
+            {% endif %}
+          </div>
+        </div>
+        <br/>
+        <div class="form-group">
+          <label for="comment">Описание задачи:</label>
+          <textarea class="form-control" rows="5" id="description" name="description" required>{{ edit.description }}</textarea>
+        </div>
+        <div class="row">
+          <div class="col">
+            <button type="submit" class="btn btn-primary">
+              {% if path == 'edit' %}
+              Обновить
+              {% else %}
+              Добавить
+              {% endif %}
+            </button>
+          </div>
+        </div>
+      </form>
+      {% endif %}
+    </div>
+  </body>
+  
+</html>

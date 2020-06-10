@@ -4,14 +4,15 @@ namespace lib;
 
 use lib\Auth;
 use lib\Link;
-use models\Tasks;
+use models\TasksMySQL;
 
 class Data 
 {
-    public static function get(Request $request, Tasks $tasks) {
+    public static function get(Request $request, TasksMySQL $tasks) {
         $link = new Link($request);
         if (Auth::state()) $data['auth'] = true;
         $dataSQL['limit'] = 3;
+        $dataSQL['page'] = $request->page;
         if ($request->page) $dataSQL['offset'] = ($request->page - 1) * $dataSQL['limit'];
         if ($request->order) { 
             $dataSQL['order'] = $request->order;

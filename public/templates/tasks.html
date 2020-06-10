@@ -55,7 +55,7 @@
           {% if list_tasks|length > 0 %}
           {% for task in list_tasks %}
           <tr class="
-          {% if task.status == 't' %}
+          {% if task.status == 1 %}
             table-success
           {% else %}
             table-warning
@@ -70,7 +70,7 @@
               {% endif %}
             </td>
             <td>
-              {% if task.status == 't' %}
+              {% if task.status == 1 %}
                 Выполнено
               {% else %}
                 {% if path != 'edit' %}
@@ -79,7 +79,7 @@
                 <a href="{{ links.common|e }}&commit={{ task.id|e }}">Не решена</a>
                 {% endif %}
               {% endif %}
-              {% if task.edited == 't' %}
+              {% if task.edited == 1 %}
                 <br/>Отредактировано администратором
               {% endif %}
             </td>

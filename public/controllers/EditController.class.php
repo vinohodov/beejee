@@ -5,13 +5,13 @@ namespace controllers;
 use lib\Request;
 use lib\Template;
 use lib\Data;
-use models\Tasks;
+use models\TasksMySQL;
 
 class EditController
 {
     function index(Request $request)
     {
-        $tasks = new Tasks();
+        $tasks = new TasksMySQL();
         $data['path'] = 'edit';
         if ($request->commit) $tasks->commit($request->commit);
         if ($request->description && 

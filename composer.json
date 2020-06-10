@@ -1,7 +1,8 @@
 {
     "name": "laravel/bee",
     "require": {
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "thingengineer/mysqli-database-class": "dev-master"
     },
     "authors": [
         {
